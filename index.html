@@ -8,21 +8,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
-        /* Estilos base para modo oscuro */
         body { 
             background-color: #000000; 
             color: #ffffff;
             font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            padding-bottom: 90px; /* Espacio para la nav bar */
+            padding-bottom: 90px;
             min-height: 100vh;
         }
 
         .view { display: none; padding: 20px; width: 100%; box-sizing: border-box; }
         .view-active { display: block; }
 
-        /* Tarjetas Oscuras */
         .card { 
             background: #111111; 
             border-radius: 18px; 
@@ -32,7 +29,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
-        /* Inputs y Textareas */
         input[type="text"], textarea {
             background: #1a1a1a;
             color: #ffffff;
@@ -43,9 +39,7 @@
             outline: none;
             box-sizing: border-box;
         }
-        input:focus, textarea:focus { border-color: #3b82f6; }
 
-        /* Navegación Inferior */
         .nav-bar { 
             position: fixed; 
             bottom: 0; 
@@ -67,7 +61,6 @@
             font-size: 10px; 
             font-weight: bold; 
             cursor: pointer;
-            transition: color 0.2s;
         }
         .nav-item.active { color: #3b82f6; }
 
@@ -83,7 +76,6 @@
         }
         .btn-accion:active { transform: scale(0.95); }
 
-        /* Colores de estado */
         .border-p { border-left: 6px solid #f59e0b; }
         .border-e { border-left: 6px solid #3b82f6; }
         .border-c { border-left: 6px solid #10b981; }
@@ -91,39 +83,31 @@
 </head>
 <body>
 
-    <!-- PESTAÑA: RUTAS -->
     <div id="v-rutas" class="view view-active">
         <h1 class="text-3xl font-black italic mb-2">MIS RUTAS</h1>
         <p class="text-gray-500 text-xs mb-6 font-bold tracking-widest uppercase">Selecciona un día</p>
         <div id="lista-dias"></div>
     </div>
 
-    <!-- PESTAÑA: EN CURSO -->
     <div id="v-curso" class="view">
         <h1 class="text-3xl font-black italic mb-2">EN CURSO</h1>
         <p class="text-gray-500 text-xs mb-6 font-bold tracking-widest uppercase">Gestión de Carga</p>
         <div id="lista-pedidos-curso"></div>
     </div>
 
-    <!-- PESTAÑA: AJUSTES -->
     <div id="v-ajustes" class="view">
         <h1 class="text-3xl font-black italic mb-2">AJUSTES</h1>
         <p class="text-gray-500 text-xs mb-6 font-bold tracking-widest uppercase">Configuración</p>
-        
         <div class="card">
-            <h2 class="font-bold mb-2">Datos</h2>
             <button onclick="exportarJSON()" class="btn-accion bg-blue-600 text-white w-full mb-3">Exportar Copia (.json)</button>
             <input type="file" id="import-file" class="hidden" onchange="importarJSON(event)">
             <button onclick="document.getElementById('import-file').click()" class="btn-accion bg-gray-800 text-gray-300 w-full">Importar Copia</button>
         </div>
-
         <div class="card border-red-900">
-            <h2 class="font-bold text-red-500 mb-2">Peligro</h2>
-            <button onclick="borrarTodo()" class="btn-accion bg-red-900 text-white w-full">Borrar Todo el Programa</button>
+            <button onclick="borrarTodo()" class="btn-accion bg-red-900 text-white w-full">Borrar Todo</button>
         </div>
     </div>
 
-    <!-- PESTAÑA OCULTA: CLIENTES DEL DÍA -->
     <div id="v-detalle-dia" class="view fixed inset-0 z-[500] bg-black overflow-y-auto pb-32" style="display: none;">
         <div class="flex items-center gap-4 mb-4">
             <button onclick="cerrarDetalle()" class="bg-gray-900 p-4 rounded-xl text-white font-black">←</button>
@@ -132,23 +116,20 @@
                 <span id="txt-zona-actual" class="text-blue-500 text-[10px] font-bold">Sin Zona</span>
             </div>
         </div>
-
         <div class="card bg-gray-900 border-none">
-            <input type="text" id="in-zona" placeholder="Nombre de la zona (ej: Centro)" class="mb-4" oninput="cambiarZona(this.value)">
+            <input type="text" id="in-zona" placeholder="Zona" class="mb-4" oninput="cambiarZona(this.value)">
             <div class="flex gap-2">
-                <input type="text" id="in-cliente" placeholder="Nuevo cliente..." class="flex-1">
+                <input type="text" id="in-cliente" placeholder="Cliente..." class="flex-1">
                 <button onclick="nuevoCliente()" class="bg-blue-600 px-6 rounded-xl font-bold">+</button>
             </div>
         </div>
-
         <div id="lista-clientes-dia"></div>
     </div>
 
-    <!-- MODAL CÁMARA -->
     <div id="v-cam" class="fixed inset-0 z-[1000] bg-black hidden flex-col">
         <video id="vid" class="flex-1 w-full object-cover" autoplay playsinline muted></video>
         <div class="p-8 bg-black flex flex-col items-center gap-4">
-            <div id="cam-status" class="text-blue-500 text-[10px] font-bold animate-pulse hidden uppercase">Escaneando texto...</div>
+            <div id="cam-status" class="text-blue-500 text-[10px] font-bold animate-pulse hidden uppercase">Escaneando...</div>
             <div class="flex justify-between w-full items-center">
                 <button onclick="cerrarCamara()" class="text-gray-500 font-bold uppercase text-xs">Cerrar</button>
                 <button onclick="hacerFoto()" class="w-20 h-20 bg-white rounded-full border-8 border-gray-800"></button>
@@ -157,7 +138,6 @@
         </div>
     </div>
 
-    <!-- BARRA DE NAVEGACIÓN (SIEMPRE VISIBLE) -->
     <nav class="nav-bar">
         <div onclick="irPestaña('rutas')" id="n-rutas" class="nav-item active">
             <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 01.553-.894L9 2l6 3 5.447-2.724A1 1 0 0121 3.176v10.764a1 1 0 01-.553.894L15 18l-6 2z"></path></svg>
@@ -180,7 +160,6 @@
         let cIdScan = null;
         let stream = null;
 
-        // Inicialización
         window.onload = function() {
             const save = localStorage.getItem(KEY);
             if(save) {
@@ -196,9 +175,7 @@
 
         function guardar() { localStorage.setItem(KEY, JSON.stringify(datos)); }
 
-        // Navegación
         function irPestaña(tab) {
-            // Escondemos todo
             document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('v-detalle-dia').style.display = 'none';
@@ -217,7 +194,6 @@
             }
         }
 
-        // --- RUTAS ---
         function abrirDia(idx) {
             diaIdx = idx;
             document.getElementById('txt-dia-actual').innerText = datos.dias[idx].nombre;
@@ -227,9 +203,7 @@
             renderC();
         }
 
-        function cerrarDetalle() {
-            document.getElementById('v-detalle-dia').style.display = 'none';
-        }
+        function cerrarDetalle() { document.getElementById('v-detalle-dia').style.display = 'none'; renderD(); }
 
         function cambiarZona(v) {
             datos.dias[diaIdx].zona = v;
@@ -248,89 +222,51 @@
                 cargado: false
             });
             document.getElementById('in-cliente').value = '';
-            guardar();
-            renderC();
-        }
-
-        function borrarC(id) {
-            if(!confirm("¿Eliminar cliente?")) return;
-            datos.dias[diaIdx].clientes = datos.dias[diaIdx].clientes.filter(c => c.id !== id);
-            guardar();
-            renderC();
+            guardar(); renderC();
         }
 
         function setStatus(id, s) {
             const c = datos.dias[diaIdx].clientes.find(c => c.id === id);
-            c.estado = s;
-            guardar();
-            renderC();
+            if(c) { c.estado = s; guardar(); renderC(); }
         }
 
         function setTexto(id, v) {
             const c = datos.dias[diaIdx].clientes.find(c => c.id === id);
-            c.pedido = v;
-            guardar();
+            if(c) { c.pedido = v; guardar(); }
         }
 
-        // --- CÁMARA ---
-        async function abrirScan(id) {
-            cIdScan = id;
-            document.getElementById('v-cam').classList.remove('hidden');
-            document.getElementById('v-cam').classList.add('flex');
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                document.getElementById('vid').srcObject = stream;
-            } catch (e) { alert("Error cámara"); cerrarCamara(); }
-        }
-
-        function cerrarCamara() {
-            if(stream) stream.getTracks().forEach(t => t.stop());
-            document.getElementById('v-cam').classList.add('hidden');
-        }
-
-        async function hacerFoto() {
-            const vid = document.getElementById('vid');
-            const canvas = document.createElement('canvas');
-            canvas.width = vid.videoWidth; canvas.height = vid.videoHeight;
-            canvas.getContext('2d').drawImage(vid, 0, 0);
-            document.getElementById('cam-status').classList.remove('hidden');
-            try {
-                const res = await Tesseract.recognize(canvas.toDataURL(), 'spa');
-                const c = datos.dias[diaIdx].clientes.find(c => c.id === cIdScan);
-                if(c) {
-                    c.pedido += (c.pedido ? '\n' : '') + res.data.text.trim();
-                    guardar();
-                }
-                cerrarCamara();
-                renderC();
-            } catch (e) { alert("Error OCR"); cerrarCamara(); }
-        }
-
-        // --- EN CURSO ---
+        // --- EN CURSO AUTOMATIZADO ---
         function toggleCarga(cId) {
             datos.dias.forEach(d => {
                 const c = d.clientes.find(x => x.id === cId);
-                if(c) c.cargado = !c.cargado;
+                if(c) {
+                    c.cargado = !c.cargado;
+                    // REGLA: Si está cargado, pasar a LISTO automáticamente
+                    if(c.cargado) c.estado = 'c';
+                }
             });
-            guardar();
-            renderCurso();
-        }
-
-        function marcarServido(cId) {
-            if(!confirm("¿Servido y entregado? Se eliminará de la base de datos.")) return;
-            datos.dias.forEach(d => {
-                d.clientes = d.clientes.filter(x => x.id !== cId);
-            });
-            guardar();
-            renderCurso();
+            guardar(); renderCurso();
         }
 
         function enviarWA(cId, dIdx) {
-            const c = datos.dias[dIdx].clientes.find(x => x.id === cId);
-            if(!c.pedido) return;
+            const d = datos.dias[dIdx];
+            const c = d.clientes.find(x => x.id === cId);
+            if(!c || !c.pedido) return;
+            
+            // REGLA: Al enviar WhatsApp, pasar a ENVIADO automáticamente
             c.estado = 'e';
             guardar();
+            if(document.getElementById('v-detalle-dia').style.display === 'block') renderC();
+            
             window.open(`https://wa.me/?text=${encodeURIComponent("*CLIENTE:* " + c.nombre + "\n\n" + c.pedido)}`);
+        }
+
+        function marcarServido(cId) {
+            if(!confirm("¿Confirmar servido?")) return;
+            datos.dias.forEach(d => {
+                d.clientes = d.clientes.filter(x => x.id !== cId);
+            });
+            guardar(); renderCurso();
         }
 
         // --- RENDERS ---
@@ -341,13 +277,7 @@
                 const card = document.createElement('div');
                 card.className = "card flex justify-between items-center";
                 card.onclick = () => abrirDia(i);
-                card.innerHTML = `
-                    <div>
-                        <div class="font-black text-xl uppercase">${d.nombre}</div>
-                        <div class="text-blue-500 text-[10px] font-bold uppercase tracking-widest">${d.zona || 'Configurar zona'}</div>
-                    </div>
-                    <div class="bg-white text-black w-10 h-10 flex items-center justify-center rounded-full font-black">${d.clientes.length}</div>
-                `;
+                card.innerHTML = `<div><div class="font-black text-xl uppercase">${d.nombre}</div><div class="text-blue-500 text-[10px] font-bold uppercase tracking-widest">${d.zona || 'Configurar zona'}</div></div><div class="bg-white text-black w-10 h-10 flex items-center justify-center rounded-full font-black">${d.clientes.length}</div>`;
                 cont.appendChild(card);
             });
         }
@@ -360,17 +290,14 @@
                 const card = document.createElement('div');
                 card.className = `card ${border}`;
                 card.innerHTML = `
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="font-black text-white uppercase text-lg">${c.nombre}</span>
-                        <button onclick="borrarC(${c.id})" class="text-red-900 font-bold text-[9px] uppercase">Eliminar</button>
-                    </div>
+                    <div class="flex justify-between items-center mb-4"><span class="font-black text-white uppercase text-lg">${c.nombre}</span><button onclick="borrarC(${c.id})" class="text-red-900 font-bold text-[9px] uppercase">Eliminar</button></div>
                     <div class="flex gap-2 mb-4">
                         <button onclick="setStatus(${c.id}, 'p')" class="flex-1 py-3 rounded-lg text-[9px] font-bold ${c.estado==='p'?'bg-orange-500 text-white':'bg-gray-800 text-gray-500'}">PENDIENTE</button>
                         <button onclick="setStatus(${c.id}, 'e')" class="flex-1 py-3 rounded-lg text-[9px] font-bold ${c.estado==='e'?'bg-blue-600 text-white':'bg-gray-800 text-gray-500'}">ENVIADO</button>
                         <button onclick="setStatus(${c.id}, 'c')" class="flex-1 py-3 rounded-lg text-[9px] font-bold ${c.estado==='c'?'bg-green-600 text-white':'bg-gray-800 text-gray-500'}">LISTO</button>
                     </div>
                     <button onclick="abrirScan(${c.id})" class="btn-accion bg-white text-black w-full mb-3">Escanear Nota</button>
-                    <textarea oninput="setTexto(${c.id}, this.value)" placeholder="Anota el pedido aquí...">${c.pedido}</textarea>
+                    <textarea oninput="setTexto(${c.id}, this.value)" placeholder="Pedido...">${c.pedido}</textarea>
                     <button onclick="enviarWA(${c.id}, ${diaIdx})" class="btn-accion bg-green-700 text-white w-full">WhatsApp</button>
                 `;
                 cont.appendChild(card);
@@ -381,7 +308,7 @@
             const cont = document.getElementById('lista-pedidos-curso');
             cont.innerHTML = '';
             let hay = false;
-            datos.dias.forEach((d, iIdx) => {
+            datos.dias.forEach((d, i) => {
                 d.clientes.forEach(c => {
                     if(c.pedido.trim() !== "") {
                         hay = true;
@@ -389,17 +316,12 @@
                         card.className = "card border-l-4 border-blue-600";
                         card.innerHTML = `
                             <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <div class="font-black text-white uppercase text-lg">${c.nombre}</div>
-                                    <div class="text-blue-500 text-[9px] font-bold uppercase">${d.nombre} • ${d.zona}</div>
-                                </div>
-                                <div class="text-[8px] bg-gray-800 px-2 py-1 rounded font-bold">${c.estado.toUpperCase()}</div>
+                                <div><div class="font-black text-white uppercase text-lg">${c.nombre}</div><div class="text-blue-500 text-[9px] font-bold uppercase">${d.nombre} • ${d.zona}</div></div>
+                                <div class="text-[8px] bg-gray-800 px-2 py-1 rounded font-bold">${c.estado === 'p' ? 'PEND' : (c.estado === 'e' ? 'ENV' : 'LISTO')}</div>
                             </div>
                             <div class="bg-black/50 p-3 rounded-xl text-xs text-gray-400 italic mb-4 border border-gray-900">${c.pedido}</div>
                             <div class="grid grid-cols-2 gap-3">
-                                <button onclick="toggleCarga(${c.id})" class="btn-accion ${c.cargado ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-400'}">
-                                    ${c.cargado ? '✓ CARGADO' : 'CARGAR'}
-                                </button>
+                                <button onclick="toggleCarga(${c.id})" class="btn-accion ${c.cargado ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-400'}">${c.cargado ? '✓ CARGADO' : 'CARGAR'}</button>
                                 <button onclick="marcarServido(${c.id})" class="btn-accion bg-red-600 text-white">SERVIDO</button>
                             </div>
                         `;
@@ -407,21 +329,16 @@
                     }
                 });
             });
-            if(!hay) cont.innerHTML = '<div class="py-20 text-center text-gray-600 font-bold uppercase text-xs">No hay pedidos registrados</div>';
+            if(!hay) cont.innerHTML = '<div class="py-20 text-center text-gray-600 font-bold text-xs uppercase">No hay pedidos</div>';
         }
 
-        // --- OTROS ---
-        function borrarTodo() { if(confirm("¿BORRAR TODO?")) { localStorage.removeItem(KEY); location.reload(); } }
-        function exportarJSON() { 
-            const b = new Blob([JSON.stringify(datos)], {type:"application/json"}); 
-            const a = document.createElement("a"); 
-            a.href = URL.createObjectURL(b); a.download = "ruta_dark.json"; a.click(); 
-        }
-        function importarJSON(e) { 
-            const r = new FileReader(); 
-            r.onload = (ev) => { datos = JSON.parse(ev.target.result); guardar(); location.reload(); }; 
-            r.readAsText(e.target.files[0]); 
-        }
+        function borrarC(id) { if(confirm("¿Eliminar?")) { datos.dias[diaIdx].clientes = datos.dias[diaIdx].clientes.filter(c => c.id !== id); guardar(); renderC(); } }
+        async function abrirScan(id) { cIdScan = id; document.getElementById('v-cam').classList.replace('hidden', 'flex'); try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); document.getElementById('vid').srcObject = stream; } catch (e) { cerrarCamara(); } }
+        function cerrarCamara() { if(stream) stream.getTracks().forEach(t => t.stop()); document.getElementById('v-cam').classList.replace('flex', 'hidden'); }
+        async function hacerFoto() { const vid = document.getElementById('vid'); const canvas = document.createElement('canvas'); canvas.width = vid.videoWidth; canvas.height = vid.videoHeight; canvas.getContext('2d').drawImage(vid, 0, 0); document.getElementById('cam-status').classList.remove('hidden'); try { const res = await Tesseract.recognize(canvas.toDataURL(), 'spa'); const c = datos.dias[diaIdx].clientes.find(c => c.id === cIdScan); if(c) { c.pedido += (c.pedido ? '\n' : '') + res.data.text.trim(); guardar(); } cerrarCamara(); renderC(); } catch (e) { cerrarCamara(); } }
+        function borrarTodo() { if(confirm("¿Borrar todo?")) { localStorage.removeItem(KEY); location.reload(); } }
+        function exportarJSON() { const b = new Blob([JSON.stringify(datos)], {type:"application/json"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = "ruta.json"; a.click(); }
+        function importarJSON(e) { const r = new FileReader(); r.onload = (ev) => { datos = JSON.parse(ev.target.result); guardar(); location.reload(); }; r.readAsText(e.target.files[0]); }
     </script>
 </body>
 </html>
