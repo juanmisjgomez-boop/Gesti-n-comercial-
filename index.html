@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gestor Comercial Pro - Completo</title>
+    <title>Gestor Comercial Pro - WhatsApp Plus</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
         body { 
             background-color: #000000; 
             color: #ffffff;
-            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
             margin: 0;
             padding-bottom: 90px;
             min-height: 100vh;
@@ -26,7 +26,6 @@
             padding: 18px; 
             margin-bottom: 16px; 
             border: 1px solid #222222;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
         input[type="text"], textarea {
@@ -41,44 +40,31 @@
         }
 
         .nav-bar { 
-            position: fixed; 
-            bottom: 0; 
-            left: 0; 
-            right: 0; 
-            height: 75px; 
-            background: #0a0a0a; 
-            display: flex; 
-            justify-content: space-around; 
-            align-items: center; 
-            border-top: 1px solid #222222; 
-            z-index: 1000; 
+            position: fixed; bottom: 0; left: 0; right: 0; 
+            height: 75px; background: #0a0a0a; 
+            display: flex; justify-content: space-around; align-items: center; 
+            border-top: 1px solid #222222; z-index: 1000; 
         }
+        
         .nav-item { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            color: #555555; 
-            font-size: 10px; 
-            font-weight: bold; 
-            cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; 
+            color: #555555; font-size: 10px; font-weight: bold; cursor: pointer;
         }
         .nav-item.active { color: #3b82f6; }
 
         .btn-accion {
             padding: 12px;
-            border-radius: 12px;
+            border-radius: 10px;
             font-weight: 800;
             text-align: center;
             cursor: pointer;
             text-transform: uppercase;
-            font-size: 11px;
-            transition: all 0.2s;
+            font-size: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
-        .btn-accion:active { transform: scale(0.95); }
 
         .border-p { border-left: 6px solid #f59e0b; }
         .border-e { border-left: 6px solid #3b82f6; }
@@ -97,45 +83,45 @@
 </head>
 <body>
 
-    <!-- RUTAS -->
+    <!-- VISTA RUTAS -->
     <div id="v-rutas" class="view view-active">
         <h1 class="text-3xl font-black italic mb-2">MIS RUTAS</h1>
-        <p class="text-gray-500 text-xs mb-6 font-bold tracking-widest uppercase">Selecciona un día</p>
+        <p class="text-gray-500 text-xs mb-6 font-bold uppercase tracking-widest">Días de Reparto</p>
         <div id="lista-dias"></div>
     </div>
 
-    <!-- EN CURSO -->
+    <!-- VISTA EN CURSO -->
     <div id="v-curso" class="view">
         <h1 class="text-3xl font-black italic mb-2">EN CURSO</h1>
-        <p class="text-gray-500 text-xs mb-6 font-bold tracking-widest uppercase">Gestión de Carga</p>
+        <p class="text-gray-500 text-xs mb-6 font-bold uppercase tracking-widest">Pedidos para Carga</p>
         <div id="lista-pedidos-curso"></div>
     </div>
 
-    <!-- AJUSTES -->
+    <!-- VISTA AJUSTES -->
     <div id="v-ajustes" class="view">
         <h1 class="text-3xl font-black italic mb-2">AJUSTES</h1>
-        <p class="text-gray-500 text-xs mb-6 font-bold tracking-widest uppercase">Guardado y Copias</p>
         <div class="card">
-            <button onclick="exportarJSON()" class="btn-accion bg-blue-600 text-white w-full mb-3">Exportar Copia (.json)</button>
+            <button onclick="exportarJSON()" class="btn-accion bg-blue-600 text-white w-full mb-3 text-sm">Exportar Copia (.json)</button>
             <input type="file" id="import-file" class="hidden" onchange="importarJSON(event)">
-            <button onclick="document.getElementById('import-file').click()" class="btn-accion bg-gray-800 text-gray-300 w-full">Importar Copia</button>
+            <button onclick="document.getElementById('import-file').click()" class="btn-accion bg-gray-800 text-gray-300 w-full text-sm">Importar Copia</button>
         </div>
-        <div class="card border-red-900">
-            <button onclick="borrarTodo()" class="btn-accion bg-red-900 text-white w-full">Borrar Todo</button>
+        <div class="card">
+            <button onclick="borrarTodo()" class="btn-accion bg-red-900 text-white w-full text-sm">Borrar Todo</button>
         </div>
     </div>
 
-    <!-- DETALLE CLIENTE -->
+    <!-- DETALLE DÍA -->
     <div id="v-detalle-dia" class="view fixed inset-0 z-[500] bg-black overflow-y-auto pb-32" style="display: none;">
         <div class="flex items-center gap-4 mb-4">
-            <button onclick="cerrarDetalle()" class="bg-gray-900 p-4 rounded-xl text-white font-black text-xl">←</button>
+            <button onclick="cerrarDetalle()" class="bg-gray-900 p-4 rounded-xl text-white font-black">←</button>
             <div>
                 <h2 id="txt-dia-actual" class="text-2xl font-black uppercase">Día</h2>
                 <span id="txt-zona-actual" class="text-blue-500 text-[10px] font-bold uppercase">Sin Zona</span>
             </div>
         </div>
+        
         <div class="card bg-gray-900 border-none">
-            <input type="text" id="in-zona" placeholder="Zona (Pueblo, sector...)" class="mb-4 p-3 rounded-xl border border-gray-700 bg-black text-white" oninput="cambiarZona(this.value)">
+            <input type="text" id="in-zona" placeholder="Zona/Pueblo..." class="mb-4 p-3 rounded-xl border border-gray-700 bg-black text-white" oninput="cambiarZona(this.value)">
             <div class="flex gap-2">
                 <input type="text" id="in-cliente" placeholder="Nombre cliente..." class="flex-1 bg-black p-3 rounded-xl border border-gray-700 text-white outline-none">
                 <button onclick="nuevoCliente()" class="bg-blue-600 px-6 rounded-xl font-bold">+</button>
@@ -148,7 +134,7 @@
     <div id="v-cam" class="fixed inset-0 z-[1000] bg-black hidden flex-col">
         <video id="vid" class="flex-1 w-full object-cover" autoplay playsinline muted></video>
         <div class="p-8 bg-black flex flex-col items-center gap-4">
-            <div id="cam-status" class="text-blue-500 text-[10px] font-bold animate-pulse hidden uppercase text-center">Escaneando texto...</div>
+            <div id="cam-status" class="text-blue-500 text-[10px] font-bold animate-pulse hidden uppercase">Escaneando...</div>
             <div class="flex justify-between w-full items-center">
                 <button onclick="cerrarCamara()" class="text-gray-500 font-bold uppercase text-xs">Cerrar</button>
                 <button onclick="hacerFoto()" class="w-20 h-20 bg-white rounded-full border-8 border-gray-800"></button>
@@ -157,7 +143,7 @@
         </div>
     </div>
 
-    <!-- NAV BAR -->
+    <!-- NAVEGACIÓN -->
     <nav class="nav-bar">
         <div onclick="irPestaña('rutas')" id="n-rutas" class="nav-item active">
             <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 01.553-.894L9 2l6 3 5.447-2.724A1 1 0 0121 3.176v10.764a1 1 0 01-.553.894L15 18l-6 2z"></path></svg>
@@ -174,7 +160,7 @@
     </nav>
 
     <script>
-        const KEY = 'GEST_PRO_FULL_V2';
+        const KEY = 'GEST_WA_V4_FINAL';
         let datos = { dias: [] };
         let diaIdx = 0;
         let cIdScan = null;
@@ -199,7 +185,6 @@
             document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('v-detalle-dia').style.display = 'none';
-
             if(tab === 'rutas') {
                 document.getElementById('v-rutas').classList.add('view-active');
                 document.getElementById('n-rutas').classList.add('active');
@@ -208,10 +193,28 @@
                 document.getElementById('v-curso').classList.add('view-active');
                 document.getElementById('n-curso').classList.add('active');
                 renderCurso();
-            } else if(tab === 'ajustes') {
+            } else {
                 document.getElementById('v-ajustes').classList.add('view-active');
                 document.getElementById('n-ajustes').classList.add('active');
             }
+        }
+
+        function renderD() {
+            const cont = document.getElementById('lista-dias');
+            cont.innerHTML = '';
+            datos.dias.forEach((d, i) => {
+                const card = document.createElement('div');
+                card.className = "card flex justify-between items-center";
+                card.onclick = () => abrirDia(i);
+                card.innerHTML = `
+                    <div>
+                        <div class="font-black text-xl uppercase">${d.nombre}</div>
+                        <div class="text-blue-500 text-[10px] font-bold uppercase">${d.zona || 'Configurar zona'}</div>
+                    </div>
+                    <div class="bg-blue-600 text-white w-8 h-8 flex items-center justify-center rounded-full font-black text-xs">${d.clientes.length}</div>
+                `;
+                cont.appendChild(card);
+            });
         }
 
         function abrirDia(idx) {
@@ -224,12 +227,7 @@
         }
 
         function cerrarDetalle() { document.getElementById('v-detalle-dia').style.display = 'none'; renderD(); }
-
-        function cambiarZona(v) {
-            datos.dias[diaIdx].zona = v;
-            document.getElementById('txt-zona-actual').innerText = v || 'Sin Zona';
-            guardar();
-        }
+        function cambiarZona(v) { datos.dias[diaIdx].zona = v; document.getElementById('txt-zona-actual').innerText = v || 'Sin Zona'; guardar(); }
 
         function nuevoCliente() {
             const nom = document.getElementById('in-cliente').value;
@@ -244,6 +242,11 @@
             });
             document.getElementById('in-cliente').value = '';
             guardar(); renderC();
+        }
+
+        function setStatus(id, s) {
+            const c = datos.dias[diaIdx].clientes.find(c => c.id === id);
+            if(c) { c.estado = s; guardar(); renderC(); }
         }
 
         function triggerFoto(id) {
@@ -263,14 +266,26 @@
             input.click();
         }
 
-        async function compartirWhatsApp(id) {
+        function setTexto(id, v) {
+            const c = datos.dias[diaIdx].clientes.find(c => c.id === id);
+            if(c) { c.pedido = v; guardar(); }
+        }
+
+        async function enviarWhatsApp(id) {
             const c = datos.dias[diaIdx].clientes.find(c => c.id === id);
             if(!c) return;
+
+            // Formatear el pedido como una lista bonita
+            const lineas = c.pedido.split('\n').filter(l => l.trim() !== "");
+            const pedidoFormateado = lineas.map(l => `• ${l.trim()}`).join('\n');
+
+            const textoBase = `*CLIENTE:* ${c.nombre}\n\n*PEDIDO:*\n${pedidoFormateado}`;
+
             c.estado = 'e';
-            guardar(); renderC();
+            guardar();
+            renderC();
 
-            const textoBase = `*CLIENTE:* ${c.nombre}\n*PEDIDO:* ${c.pedido}`;
-
+            // Intentar compartir con imagen si existe
             if (c.foto && navigator.canShare) {
                 try {
                     const res = await fetch(c.foto);
@@ -282,25 +297,9 @@
                     }
                 } catch (e) {}
             }
-            window.open(`https://wa.me/?text=${encodeURIComponent(textoBase)}`);
-        }
 
-        function renderD() {
-            const cont = document.getElementById('lista-dias');
-            cont.innerHTML = '';
-            datos.dias.forEach((d, i) => {
-                const card = document.createElement('div');
-                card.className = "card flex justify-between items-center";
-                card.onclick = () => abrirDia(i);
-                card.innerHTML = `
-                    <div>
-                        <div class="font-black text-xl uppercase">${d.nombre}</div>
-                        <div class="text-blue-500 text-[10px] font-bold uppercase tracking-widest">${d.zona || 'Configurar zona'}</div>
-                    </div>
-                    <div class="bg-white text-black w-8 h-8 flex items-center justify-center rounded-full font-black text-xs">${d.clientes.length}</div>
-                `;
-                cont.appendChild(card);
-            });
+            // Fallback directo a chat
+            window.open(`https://wa.me/?text=${encodeURIComponent(textoBase)}`);
         }
 
         function renderC() {
@@ -311,18 +310,27 @@
                 const card = document.createElement('div');
                 card.className = `card ${border}`;
                 card.innerHTML = `
-                    <div class="flex justify-between items-center mb-4"><span class="font-black text-white uppercase text-lg">${c.nombre}</span><button onclick="borrarC(${c.id})" class="text-red-900 font-bold text-[9px] uppercase">Borrar</button></div>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="font-black text-white uppercase text-lg">${c.nombre}</span>
+                        <button onclick="borrarC(${c.id})" class="text-red-900 font-bold text-[9px] uppercase">Eliminar</button>
+                    </div>
+
+                    <div class="flex gap-2 mb-4">
+                        <button onclick="setStatus(${c.id}, 'p')" class="flex-1 py-3 rounded-lg text-[8px] font-bold ${c.estado==='p'?'bg-orange-500 text-white':'bg-gray-800 text-gray-500'}">PENDIENTE</button>
+                        <button onclick="setStatus(${c.id}, 'e')" class="flex-1 py-3 rounded-lg text-[8px] font-bold ${c.estado==='e'?'bg-blue-600 text-white':'bg-gray-800 text-gray-500'}">ENVIADO</button>
+                        <button onclick="setStatus(${c.id}, 'c')" class="flex-1 py-3 rounded-lg text-[8px] font-bold ${c.estado==='c'?'bg-green-600 text-white':'bg-gray-800 text-gray-500'}">LISTO</button>
+                    </div>
                     
                     <div class="grid grid-cols-2 gap-2 mb-3">
-                        <button onclick="abrirScan(${c.id})" class="btn-accion bg-gray-800 text-white">OCR</button>
-                        <button onclick="triggerFoto(${c.id})" class="btn-accion bg-blue-900 text-white">${c.foto ? 'CAMBIAR FOTO' : 'FOTO'}</button>
+                        <button onclick="abrirScan(${c.id})" class="btn-accion bg-gray-800 text-white">OCR ESCANEAR</button>
+                        <button onclick="triggerFoto(${c.id})" class="btn-accion bg-blue-900 text-white">SUBIR FOTO</button>
                     </div>
 
                     ${c.foto ? `<div class="img-container"><img src="${c.foto}" class="img-preview"></div>` : ''}
 
-                    <textarea oninput="setTexto(${c.id}, this.value)" placeholder="Nota del pedido..." class="mb-3">${c.pedido}</textarea>
+                    <textarea oninput="setTexto(${c.id}, this.value)" placeholder="Escribe el pedido aquí... (Una cosa por línea)" class="mb-3 text-sm min-h-[120px]">${c.pedido}</textarea>
                     
-                    <button onclick="compartirWhatsApp(${c.id})" class="btn-accion bg-green-600 text-white w-full">ENVIAR WHATSAPP</button>
+                    <button onclick="enviarWhatsApp(${c.id})" class="btn-accion bg-green-600 text-white w-full py-4 text-sm">ENVIAR WHATSAPP</button>
                 `;
                 cont.appendChild(card);
             });
@@ -341,30 +349,28 @@
                         card.innerHTML = `
                             <div class="font-black text-white uppercase text-lg mb-1">${c.nombre}</div>
                             <div class="text-blue-500 text-[9px] font-bold uppercase mb-2">${d.nombre} • ${d.zona}</div>
-                            ${c.foto ? `<img src="${c.foto}" class="w-full rounded-lg mb-2 border border-gray-900">` : ''}
-                            <div class="bg-black p-3 rounded-xl text-xs text-gray-400 italic mb-4">${c.pedido || 'Sin texto'}</div>
+                            ${c.foto ? `<img src="${c.foto}" class="w-full rounded-lg mb-2">` : ''}
+                            <div class="bg-black p-3 rounded-xl text-xs text-gray-400 italic mb-4 whitespace-pre-wrap">${c.pedido || 'Sin pedido'}</div>
                             <div class="grid grid-cols-2 gap-3">
-                                <button onclick="toggleCarga(${c.id})" class="btn-accion ${c.cargado ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-400'}">${c.cargado ? 'CARGADO' : 'CARGAR'}</button>
-                                <button onclick="marcarServido(${c.id})" class="btn-accion bg-red-900 text-white">SERVIDO</button>
+                                <button onclick="toggleCarga(${c.id})" class="btn-accion ${c.cargado ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-400'} text-xs">${c.cargado ? 'CARGADO' : 'CARGAR'}</button>
+                                <button onclick="marcarServido(${c.id})" class="btn-accion bg-red-900 text-white text-xs">SERVIDO</button>
                             </div>
                         `;
                         cont.appendChild(card);
                     }
                 });
             });
-            if(!hay) cont.innerHTML = '<div class="py-20 text-center text-gray-600 font-bold uppercase text-xs">No hay pedidos registrados</div>';
+            if(!hay) cont.innerHTML = '<div class="py-20 text-center text-gray-600 font-bold uppercase text-xs italic">No hay nada para cargar</div>';
         }
 
-        // Funciones auxiliares
-        function setTexto(id, v) { const c = datos.dias[diaIdx].clientes.find(c => c.id === id); if(c) { c.pedido = v; guardar(); } }
         function toggleCarga(cId) { datos.dias.forEach(d => { const c = d.clientes.find(x => x.id === cId); if(c) { c.cargado = !c.cargado; if(c.cargado) c.estado = 'c'; } }); guardar(); renderCurso(); }
-        function marcarServido(cId) { if(confirm("¿Confirmar servido?")) { datos.dias.forEach(d => { d.clientes = d.clientes.filter(x => x.id !== cId); }); guardar(); renderCurso(); } }
-        function borrarC(id) { if(confirm("¿Eliminar?")) { datos.dias[diaIdx].clientes = datos.dias[diaIdx].clientes.filter(c => c.id !== id); guardar(); renderC(); } }
+        function marcarServido(cId) { if(confirm("¿Pedido servido?")) { datos.dias.forEach(d => { d.clientes = d.clientes.filter(x => x.id !== cId); }); guardar(); renderCurso(); } }
+        function borrarC(id) { if(confirm("¿Eliminar cliente?")) { datos.dias[diaIdx].clientes = datos.dias[diaIdx].clientes.filter(c => c.id !== id); guardar(); renderC(); } }
         async function abrirScan(id) { cIdScan = id; document.getElementById('v-cam').classList.replace('hidden', 'flex'); try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); document.getElementById('vid').srcObject = stream; } catch (e) { cerrarCamara(); } }
         function cerrarCamara() { if(stream) stream.getTracks().forEach(t => t.stop()); document.getElementById('v-cam').classList.replace('flex', 'hidden'); }
         async function hacerFoto() { const vid = document.getElementById('vid'); const canvas = document.createElement('canvas'); canvas.width = vid.videoWidth; canvas.height = vid.videoHeight; canvas.getContext('2d').drawImage(vid, 0, 0); document.getElementById('cam-status').classList.remove('hidden'); try { const res = await Tesseract.recognize(canvas.toDataURL(), 'spa'); const c = datos.dias[diaIdx].clientes.find(c => c.id === cIdScan); if(c) { c.pedido += (c.pedido ? '\n' : '') + res.data.text.trim(); guardar(); } cerrarCamara(); renderC(); } catch (e) { cerrarCamara(); } }
-        function borrarTodo() { if(confirm("¿Borrar todo?")) { localStorage.removeItem(KEY); location.reload(); } }
-        function exportarJSON() { const b = new Blob([JSON.stringify(datos)], {type:"application/json"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = "ruta_pro_backup.json"; a.click(); }
+        function borrarTodo() { if(confirm("¿BORRAR TODO?")) { localStorage.removeItem(KEY); location.reload(); } }
+        function exportarJSON() { const b = new Blob([JSON.stringify(datos)], {type:"application/json"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = "backup_rutas.json"; a.click(); }
         function importarJSON(e) { const r = new FileReader(); r.onload = (ev) => { datos = JSON.parse(ev.target.result); guardar(); location.reload(); }; r.readAsText(e.target.files[0]); }
     </script>
 </body>
