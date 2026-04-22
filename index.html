@@ -1,0 +1,349 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gestor Comercial v25</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <style>
+        body { background-color: #f8fafc; font-family: sans-serif; -webkit-tap-highlight-color: transparent; padding-bottom: 80px; }
+        .view { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
+        .view-active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        textarea { width: 100%; height: 120px; border: 2px solid #f1f5f9; border-radius: 12px; padding: 12px; font-size: 16px; margin: 12px 0; outline: none; transition: all 0.2s; }
+        textarea:focus { border-color: #94a3b8; background: #fff; }
+        
+        .btn-grande { padding: 14px; border-radius: 12px; font-weight: 800; text-align: center; cursor: pointer; border: none; width: 100%; display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        /* Colores de estado */
+        .status-p-border { border-top: 10px solid #f59e0b; }
+        .status-e-border { border-top: 10px solid #3b82f6; }
+        .status-c-border { border-top: 10px solid #10b981; }
+
+        .bg-pendiente { background-color: #f59e0b; color: white; }
+        .bg-enviado { background-color: #3b82f6; color: white; }
+        .bg-listo { background-color: #10b981; color: white; }
+        
+        .bg-gris-suave { background: #f1f5f9; color: #64748b; }
+        .bg-rojo-suave { background: #fee2e2; color: #ef4444; }
+        .bg-rojo-fuerte { background: #ef4444; color: white; }
+
+        video { background: #000; width: 100%; height: 100%; object-fit: cover; }
+
+        /* Navegación inferior */
+        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #e2e8f0; z-index: 50; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; font-size: 10px; font-weight: 800; text-transform: uppercase; cursor: pointer; }
+        .nav-item.active { color: #2563eb; }
+    </style>
+</head>
+<body>
+
+    <!-- VISTA 1: RUTAS (DÍAS) -->
+    <div id="v-dias" class="view view-active">
+        <header class="py-6">
+            <h1 class="text-3xl font-black text-slate-900 italic uppercase">Mi Ruta</h1>
+            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Panel de Control</p>
+        </header>
+        <div id="lista-dias"></div>
+    </div>
+
+    <!-- VISTA 2: PEDIDOS EN CURSO -->
+    <div id="v-curso" class="view">
+        <header class="py-6">
+            <h1 class="text-3xl font-black text-slate-900 italic uppercase">En Curso</h1>
+            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Gestión de Carga</p>
+        </header>
+        <div id="lista-curso"></div>
+    </div>
+
+    <!-- VISTA 3: AJUSTES -->
+    <div id="v-ajustes" class="view">
+        <header class="py-6">
+            <h1 class="text-3xl font-black text-slate-900 italic uppercase">Ajustes</h1>
+            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Seguridad y Datos</p>
+        </header>
+
+        <div class="card border-l-8 border-blue-500">
+            <h3 class="font-black text-slate-800 uppercase text-lg">Copia de Seguridad</h3>
+            <p class="text-slate-500 text-sm mb-4">Exporta tus datos a un archivo JSON.</p>
+            <button onclick="exportarDatos()" class="btn-grande bg-slate-900 text-white shadow-lg mb-4">Exportar (.json)</button>
+            <input type="file" id="file-import" class="hidden" accept=".json" onchange="importarDatos(event)">
+            <button onclick="document.getElementById('file-import').click()" class="btn-grande bg-gris-suave">Importar Datos</button>
+        </div>
+
+        <div class="card border-l-8 border-red-500 mt-10">
+            <h3 class="font-black text-red-600 uppercase text-lg">Zona de Peligro</h3>
+            <button onclick="reseteoForzado()" class="btn-grande bg-rojo-suave">Restablecer Aplicación</button>
+        </div>
+    </div>
+
+    <!-- VISTA 4: DETALLE DE CLIENTES -->
+    <div id="v-clientes" class="view fixed inset-0 z-40 bg-[#f8fafc] overflow-y-auto pb-20" style="display: none;">
+        <div class="p-4">
+            <div class="flex items-center gap-4 mb-6">
+                <button onclick="volver()" class="bg-white p-3 w-12 h-12 rounded-2xl shadow-sm border border-slate-200 font-black text-slate-700">←</button>
+                <div>
+                    <h2 id="dia-nombre" class="text-2xl font-black text-slate-800 uppercase">Día</h2>
+                    <div id="sub-zona" class="text-[10px] font-black text-blue-500 uppercase tracking-wider"></div>
+                </div>
+            </div>
+            
+            <div class="card mb-4 border-none bg-slate-800 shadow-xl">
+                <input type="text" id="in-ruta" placeholder="Nombre de la zona..." class="w-full bg-transparent font-bold text-white outline-none border-b border-slate-600 pb-1 mt-1">
+            </div>
+
+            <div class="card bg-blue-600 border-none">
+                <div class="flex gap-2">
+                    <input type="text" id="in-nuevo" placeholder="Nombre cliente..." class="flex-1 p-4 rounded-xl outline-none font-bold">
+                    <button onclick="crear()" class="bg-white text-blue-600 px-6 rounded-xl font-black text-2xl shadow-lg">+</button>
+                </div>
+            </div>
+
+            <div id="lista-clientes"></div>
+        </div>
+    </div>
+
+    <!-- VISTA 5: CÁMARA (OCR) -->
+    <div id="v-camara" class="view fixed inset-0 bg-black z-[999] p-0 flex-col" style="display: none;">
+        <video id="video" autoplay playsinline muted></video>
+        <div class="absolute bottom-0 w-full h-[25%] bg-black/90 flex flex-col items-center justify-center gap-4 border-t border-white/10">
+            <div id="ocr-status" class="text-white text-[10px] font-black uppercase animate-pulse hidden">Procesando Pedido...</div>
+            <div class="flex items-center justify-around w-full px-10">
+                <button onclick="cerrarCamara()" class="text-white text-xs font-black bg-white/10 px-8 py-4 rounded-2xl border border-white/20 uppercase">Salir</button>
+                <button onclick="capturarFoto()" class="w-20 h-20 bg-white rounded-full border-[6px] border-slate-500 shadow-2xl"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BARRA DE NAVEGACIÓN -->
+    <nav class="nav-bar">
+        <div onclick="switchTab('dias')" id="tab-dias" class="nav-item active">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
+            <span>Rutas</span>
+        </div>
+        <div onclick="switchTab('curso')" id="tab-curso" class="nav-item">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 8H4V6h16v2zm-2-6H6v2h12V2zm4 10v10H2V12h2v8h16v-8h2zm-3 2H5v2h14v-2z"/></svg>
+            <span>En Curso</span>
+        </div>
+        <div onclick="switchTab('ajustes')" id="tab-ajustes" class="nav-item">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path></svg>
+            <span>Ajustes</span>
+        </div>
+    </nav>
+
+    <script>
+        const DB_KEY = 'GEST_V23_COLORS';
+        let db = { days: [] };
+        let curD = 0;
+        let activeIdForCam = null;
+        let camStream = null;
+
+        window.onload = function() {
+            cargarDB();
+            document.getElementById('in-ruta').oninput = function() {
+                db.days[curD].zone = this.value;
+                document.getElementById('sub-zona').innerText = this.value || 'SIN ZONA';
+                save();
+            };
+        };
+
+        function cargarDB() {
+            const data = localStorage.getItem(DB_KEY);
+            if(data) {
+                db = JSON.parse(data);
+            } else {
+                db.days = [];
+                ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].forEach(n => {
+                    db.days.push({ name: n, zone: '', clients: [] });
+                });
+                save();
+            }
+            renderD();
+        }
+
+        function save() { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            if(tab === 'dias') {
+                document.getElementById('v-dias').classList.add('view-active');
+                document.getElementById('tab-dias').classList.add('active');
+                renderD();
+            } else if (tab === 'curso') {
+                document.getElementById('v-curso').classList.add('view-active');
+                document.getElementById('tab-curso').classList.add('active');
+                renderCurso();
+            } else if (tab === 'ajustes') {
+                document.getElementById('v-ajustes').classList.add('view-active');
+                document.getElementById('tab-ajustes').classList.add('active');
+            }
+        }
+
+        function volver() {
+            document.getElementById('v-clientes').style.display = 'none';
+            renderD();
+        }
+
+        function irDia(idx) {
+            curD = idx;
+            document.getElementById('dia-nombre').innerText = db.days[idx].name;
+            document.getElementById('sub-zona').innerText = db.days[idx].zone || 'SIN ZONA';
+            document.getElementById('in-ruta').value = db.days[idx].zone;
+            document.getElementById('v-clientes').style.display = 'block';
+            renderC();
+        }
+
+        function crear() {
+            const val = document.getElementById('in-nuevo').value;
+            if(!val.trim()) return;
+            db.days[curD].clients.push({
+                id: 'c' + Date.now(),
+                name: val.trim(),
+                text: '',
+                status: 'p',
+                loaded: false
+            });
+            document.getElementById('in-nuevo').value = '';
+            save(); renderC();
+        }
+
+        function actBorrar(id) {
+            db.days[curD].clients = db.days[curD].clients.filter(x => x.id !== id);
+            save(); renderC();
+        }
+
+        function actStatus(id, s) {
+            const c = db.days[curD].clients.find(x => x.id === id);
+            if(c) { c.status = s; save(); renderC(); }
+        }
+
+        function actTexto(id, val) {
+            const c = db.days[curD].clients.find(x => x.id === id);
+            if(c) { c.text = val; save(); }
+        }
+
+        // FUNCIONES DE CARGA Y SERVICIO
+        function marcarCargado(clientId) {
+            db.days.forEach(day => {
+                const c = day.clients.find(x => x.id === clientId);
+                if(c) c.loaded = !c.loaded;
+            });
+            save(); renderCurso();
+        }
+
+        function marcarServido(clientId) {
+            db.days.forEach(day => {
+                day.clients = day.clients.filter(x => x.id !== clientId);
+            });
+            save(); renderCurso();
+        }
+
+        // CÁMARA
+        async function abrirCamara(id) {
+            activeIdForCam = id;
+            document.getElementById('v-camara').style.display = 'flex';
+            try {
+                camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                document.getElementById('video').srcObject = camStream;
+            } catch (e) { alert("Error cámara"); cerrarCamara(); }
+        }
+
+        function cerrarCamara() {
+            if(camStream) camStream.getTracks().forEach(t => t.stop());
+            document.getElementById('v-camara').style.display = 'none';
+        }
+
+        async function capturarFoto() {
+            const video = document.getElementById('video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            document.getElementById('ocr-status').classList.remove('hidden');
+            try {
+                const result = await Tesseract.recognize(canvas.toDataURL(), 'spa');
+                const c = db.days[curD].clients.find(x => x.id === activeIdForCam);
+                if (c) { c.text += (c.text ? '\n' : '') + result.data.text.trim(); save(); }
+                cerrarCamara(); renderC();
+            } catch (e) { alert("Error OCR"); cerrarCamara(); }
+        }
+
+        // RENDERS
+        function renderD() {
+            const cont = document.getElementById('lista-dias');
+            cont.innerHTML = '';
+            db.days.forEach((d, i) => {
+                const div = document.createElement('div');
+                div.className = "card flex justify-between items-center";
+                div.onclick = () => irDia(i);
+                div.innerHTML = `<div><div class="font-black text-xl uppercase">${d.name}</div><div class="text-[10px] text-blue-500 font-black uppercase">${d.zone || 'Sin zona'}</div></div><div class="bg-slate-900 text-white w-12 h-12 flex items-center justify-center rounded-2xl font-black">${d.clients.length}</div>`;
+                cont.appendChild(div);
+            });
+        }
+
+        function renderC() {
+            const cont = document.getElementById('lista-clientes');
+            cont.innerHTML = '';
+            db.days[curD].clients.forEach(c => {
+                const div = document.createElement('div');
+                div.className = "card " + (c.status === 'e' ? 'status-e-border' : (c.status === 'c' ? 'status-c-border' : 'status-p-border'));
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-4"><h4 class="font-black text-xl uppercase">${c.name}</h4><button onclick="actBorrar('${c.id}')" class="text-red-400 text-[10px] font-black">BORRAR</button></div>
+                    <div class="flex gap-2 mb-4 bg-slate-50 p-1.5 rounded-2xl">
+                        <button onclick="actStatus('${c.id}', 'p')" class="flex-1 py-3 text-[10px] font-black rounded-xl ${c.status==='p'?'bg-pendiente':'text-slate-400'}">PENDIENTE</button>
+                        <button onclick="actStatus('${c.id}', 'e')" class="flex-1 py-3 text-[10px] font-black rounded-xl ${c.status==='e'?'bg-enviado':'text-slate-400'}">ENVIADO</button>
+                        <button onclick="actStatus('${c.id}', 'c')" class="flex-1 py-3 text-[10px] font-black rounded-xl ${c.status==='c'?'bg-listo':'text-slate-400'}">LISTO</button>
+                    </div>
+                    <button onclick="abrirCamara('${c.id}')" class="btn-grande bg-slate-900 text-white text-[11px]">Escanear</button>
+                    <textarea oninput="actTexto('${c.id}', this.value)" placeholder="Pedido...">${c.text}</textarea>
+                    <button onclick="enviarWA('${c.id}')" class="btn-grande bg-listo text-white text-[11px]">WhatsApp</button>
+                `;
+                cont.appendChild(div);
+            });
+        }
+
+        function renderCurso() {
+            const cont = document.getElementById('lista-curso');
+            cont.innerHTML = '';
+            let hay = false;
+            db.days.forEach(day => {
+                day.clients.forEach(c => {
+                    if (c.text.trim() !== "") {
+                        hay = true;
+                        const div = document.createElement('div');
+                        div.className = "card";
+                        div.innerHTML = `
+                            <h4 class="font-black text-lg uppercase">${c.name}</h4>
+                            <p class="text-[9px] font-bold text-blue-500 mb-2">${day.name} • ${day.zone}</p>
+                            <div class="bg-slate-50 rounded-xl p-3 mb-4 text-xs italic">${c.text}</div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button onclick="marcarCargado('${c.id}')" class="btn-grande ${c.loaded ? 'bg-listo' : 'bg-slate-200 text-slate-500'} text-[11px]">${c.loaded ? '✓ CARGADO' : 'CARGAR'}</button>
+                                <button onclick="marcarServido('${c.id}')" class="btn-grande bg-rojo-fuerte text-[11px] text-white">SERVIDO</button>
+                            </div>
+                        `;
+                        cont.appendChild(div);
+                    }
+                });
+            });
+            if(!hay) cont.innerHTML = '<p class="text-center text-slate-400 font-black uppercase text-xs py-20">No hay pedidos</p>';
+        }
+
+        function enviarWA(id) {
+            const c = db.days[curD].clients.find(x => x.id === id);
+            if(!c.text) return;
+            actStatus(id, 'e');
+            window.open(`https://wa.me/?text=${encodeURIComponent("*CLIENTE:* " + c.name + "\n\n" + c.text)}`);
+        }
+
+        function reseteoForzado() { if(confirm("¿Borrar todo?")) { localStorage.removeItem(DB_KEY); location.reload(); } }
+        function exportarDatos() { const b = new Blob([JSON.stringify(db)], {type:"application/json"}); const a = document.createElement("a"); a.href=URL.createObjectURL(b); a.download="ruta.json"; a.click(); }
+        function importarDatos(e) { const r = new FileReader(); r.onload=(ev)=>{db=JSON.parse(ev.target.result); save(); location.reload();}; r.readAsText(e.target.files[0]); }
+    </script>
+</body>
+</html>
+
+```
