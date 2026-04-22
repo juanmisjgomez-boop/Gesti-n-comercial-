@@ -4,40 +4,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gestor Comercial v25</title>
+    <title>Gestor Comercial v25 Dark</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
-        body { background-color: #f8fafc; font-family: sans-serif; -webkit-tap-highlight-color: transparent; padding-bottom: 80px; }
+        /* Fondo oscuro integral */
+        body { 
+            background-color: #0f172a; 
+            color: #f1f5f9;
+            font-family: sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+            padding-bottom: 90px; 
+            min-height: 100vh;
+        }
+
         .view { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
         .view-active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
-        textarea { width: 100%; height: 120px; border: 2px solid #f1f5f9; border-radius: 12px; padding: 12px; font-size: 16px; margin: 12px 0; outline: none; transition: all 0.2s; }
-        textarea:focus { border-color: #94a3b8; background: #fff; }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(5px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
         
-        .btn-grande { padding: 14px; border-radius: 12px; font-weight: 800; text-align: center; cursor: pointer; border: none; width: 100%; display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        /* Tarjetas estilo Dark Mode */
+        .card { 
+            background: #1e293b; 
+            border-radius: 16px; 
+            padding: 16px; 
+            margin-bottom: 16px; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4); 
+            border: 1px solid #334155; 
+        }
+
+        textarea { 
+            width: 100%; 
+            height: 120px; 
+            border: 2px solid #334155; 
+            border-radius: 12px; 
+            padding: 12px; 
+            font-size: 16px; 
+            margin: 12px 0; 
+            outline: none; 
+            transition: all 0.2s; 
+            background: #0f172a;
+            color: #f1f5f9;
+        }
+        textarea:focus { border-color: #3b82f6; }
         
-        /* Colores de estado */
-        .status-p-border { border-top: 10px solid #f59e0b; }
-        .status-e-border { border-top: 10px solid #3b82f6; }
-        .status-c-border { border-top: 10px solid #10b981; }
+        .btn-grande { 
+            padding: 14px; 
+            border-radius: 12px; 
+            font-weight: 800; 
+            text-align: center; 
+            cursor: pointer; 
+            border: none; 
+            width: 100%; 
+            display: block; 
+            margin-bottom: 6px; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+            transition: transform 0.1s;
+        }
+        .btn-grande:active { transform: scale(0.97); }
+        
+        /* Indicadores de estado */
+        .status-p-border { border-top: 8px solid #f59e0b; }
+        .status-e-border { border-top: 8px solid #3b82f6; }
+        .status-c-border { border-top: 8px solid #10b981; }
 
         .bg-pendiente { background-color: #f59e0b; color: white; }
         .bg-enviado { background-color: #3b82f6; color: white; }
         .bg-listo { background-color: #10b981; color: white; }
         
-        .bg-gris-suave { background: #f1f5f9; color: #64748b; }
-        .bg-rojo-suave { background: #fee2e2; color: #ef4444; }
+        .bg-gris-dark { background: #334155; color: #cbd5e1; }
+        .bg-rojo-dark { background: #7f1d1d; color: #fca5a5; }
         .bg-rojo-fuerte { background: #ef4444; color: white; }
 
         video { background: #000; width: 100%; height: 100%; object-fit: cover; }
 
-        /* Navegación inferior */
-        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #e2e8f0; z-index: 50; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; font-size: 10px; font-weight: 800; text-transform: uppercase; cursor: pointer; }
-        .nav-item.active { color: #2563eb; }
+        /* Navegación inferior persistente */
+        .nav-bar { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            height: 75px; 
+            background: #1e293b; 
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center; 
+            border-top: 1px solid #334155; 
+            z-index: 100; 
+        }
+        .nav-item { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 4px; 
+            color: #64748b; 
+            font-size: 10px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            cursor: pointer; 
+            flex: 1;
+            height: 100%;
+            justify-content: center;
+        }
+        .nav-item.active { color: #3b82f6; }
     </style>
 </head>
 <body>
@@ -45,8 +118,8 @@
     <!-- VISTA 1: RUTAS (DÍAS) -->
     <div id="v-dias" class="view view-active">
         <header class="py-6">
-            <h1 class="text-3xl font-black text-slate-900 italic uppercase">Mi Ruta</h1>
-            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Panel de Control</p>
+            <h1 class="text-3xl font-black text-white italic uppercase">Mi Ruta</h1>
+            <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Panel de Control</p>
         </header>
         <div id="lista-dias"></div>
     </div>
@@ -54,8 +127,8 @@
     <!-- VISTA 2: PEDIDOS EN CURSO -->
     <div id="v-curso" class="view">
         <header class="py-6">
-            <h1 class="text-3xl font-black text-slate-900 italic uppercase">En Curso</h1>
-            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Gestión de Carga</p>
+            <h1 class="text-3xl font-black text-white italic uppercase">En Curso</h1>
+            <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Gestión de Carga</p>
         </header>
         <div id="lista-curso"></div>
     </div>
@@ -63,43 +136,45 @@
     <!-- VISTA 3: AJUSTES -->
     <div id="v-ajustes" class="view">
         <header class="py-6">
-            <h1 class="text-3xl font-black text-slate-900 italic uppercase">Ajustes</h1>
-            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Seguridad y Datos</p>
+            <h1 class="text-3xl font-black text-white italic uppercase">Ajustes</h1>
+            <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Seguridad y Datos</p>
         </header>
 
         <div class="card border-l-8 border-blue-500">
-            <h3 class="font-black text-slate-800 uppercase text-lg">Copia de Seguridad</h3>
-            <p class="text-slate-500 text-sm mb-4">Exporta tus datos a un archivo JSON.</p>
-            <button onclick="exportarDatos()" class="btn-grande bg-slate-900 text-white shadow-lg mb-4">Exportar (.json)</button>
+            <h3 class="font-black text-white uppercase text-lg">Copia de Seguridad</h3>
+            <p class="text-slate-400 text-sm mb-4">Exporta tus datos a un archivo JSON.</p>
+            <button onclick="exportarDatos()" class="btn-grande bg-blue-600 text-white shadow-lg mb-4">Exportar (.json)</button>
             <input type="file" id="file-import" class="hidden" accept=".json" onchange="importarDatos(event)">
-            <button onclick="document.getElementById('file-import').click()" class="btn-grande bg-gris-suave">Importar Datos</button>
+            <button onclick="document.getElementById('file-import').click()" class="btn-grande bg-gris-dark">Importar Datos</button>
         </div>
 
         <div class="card border-l-8 border-red-500 mt-10">
-            <h3 class="font-black text-red-600 uppercase text-lg">Zona de Peligro</h3>
-            <button onclick="reseteoForzado()" class="btn-grande bg-rojo-suave">Restablecer Aplicación</button>
+            <h3 class="font-black text-red-500 uppercase text-lg">Zona de Peligro</h3>
+            <p class="text-slate-400 text-sm mb-4">Borra toda la información actual.</p>
+            <button onclick="reseteoForzado()" class="btn-grande bg-rojo-dark">Restablecer Aplicación</button>
         </div>
     </div>
 
-    <!-- VISTA 4: DETALLE DE CLIENTES -->
-    <div id="v-clientes" class="view fixed inset-0 z-40 bg-[#f8fafc] overflow-y-auto pb-20" style="display: none;">
+    <!-- VISTA 4: DETALLE DE CLIENTES (RUTA DEL DÍA) -->
+    <div id="v-clientes" class="view fixed inset-0 z-40 bg-[#0f172a] overflow-y-auto pb-24" style="display: none;">
         <div class="p-4">
             <div class="flex items-center gap-4 mb-6">
-                <button onclick="volver()" class="bg-white p-3 w-12 h-12 rounded-2xl shadow-sm border border-slate-200 font-black text-slate-700">←</button>
+                <button onclick="volver()" class="bg-slate-800 p-3 w-12 h-12 rounded-2xl shadow-sm border border-slate-700 text-white font-black">←</button>
                 <div>
-                    <h2 id="dia-nombre" class="text-2xl font-black text-slate-800 uppercase">Día</h2>
-                    <div id="sub-zona" class="text-[10px] font-black text-blue-500 uppercase tracking-wider"></div>
+                    <h2 id="dia-nombre" class="text-2xl font-black text-white uppercase">Día</h2>
+                    <div id="sub-zona" class="text-[10px] font-black text-blue-400 uppercase tracking-wider"></div>
                 </div>
             </div>
             
-            <div class="card mb-4 border-none bg-slate-800 shadow-xl">
-                <input type="text" id="in-ruta" placeholder="Nombre de la zona..." class="w-full bg-transparent font-bold text-white outline-none border-b border-slate-600 pb-1 mt-1">
+            <div class="card border-none bg-slate-800/50 shadow-xl">
+                <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Configurar Zona</label>
+                <input type="text" id="in-ruta" placeholder="Escribe la zona aquí..." class="w-full bg-transparent font-bold text-white outline-none border-b border-slate-700 pb-1 mt-1">
             </div>
 
-            <div class="card bg-blue-600 border-none">
+            <div class="card bg-blue-900/40 border-blue-500/30">
                 <div class="flex gap-2">
-                    <input type="text" id="in-nuevo" placeholder="Nombre cliente..." class="flex-1 p-4 rounded-xl outline-none font-bold">
-                    <button onclick="crear()" class="bg-white text-blue-600 px-6 rounded-xl font-black text-2xl shadow-lg">+</button>
+                    <input type="text" id="in-nuevo" placeholder="Nombre cliente..." class="flex-1 p-4 rounded-xl outline-none font-bold bg-slate-900 text-white border border-slate-700">
+                    <button onclick="crear()" class="bg-blue-600 text-white px-6 rounded-xl font-black text-2xl shadow-lg">+</button>
                 </div>
             </div>
 
@@ -107,8 +182,8 @@
         </div>
     </div>
 
-    <!-- VISTA 5: CÁMARA (OCR) -->
-    <div id="v-camara" class="view fixed inset-0 bg-black z-[999] p-0 flex-col" style="display: none;">
+    <!-- VISTA 5: CÁMARA -->
+    <div id="v-camara" class="view fixed inset-0 bg-black z-[200] p-0 flex-col" style="display: none;">
         <video id="video" autoplay playsinline muted></video>
         <div class="absolute bottom-0 w-full h-[25%] bg-black/90 flex flex-col items-center justify-center gap-4 border-t border-white/10">
             <div id="ocr-status" class="text-white text-[10px] font-black uppercase animate-pulse hidden">Procesando Pedido...</div>
@@ -119,18 +194,18 @@
         </div>
     </div>
 
-    <!-- BARRA DE NAVEGACIÓN -->
+    <!-- BARRA DE NAVEGACIÓN GLOBAL -->
     <nav class="nav-bar">
         <div onclick="switchTab('dias')" id="tab-dias" class="nav-item active">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 01.553-.894L9 2l6 3 5.447-2.724A1 1 0 0121 3.176v10.764a1 1 0 01-.553.894L15 18l-6 2z"></path></svg>
             <span>Rutas</span>
         </div>
         <div onclick="switchTab('curso')" id="tab-curso" class="nav-item">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 8H4V6h16v2zm-2-6H6v2h12V2zm4 10v10H2V12h2v8h16v-8h2zm-3 2H5v2h14v-2z"/></svg>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
             <span>En Curso</span>
         </div>
         <div onclick="switchTab('ajustes')" id="tab-ajustes" class="nav-item">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path></svg>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             <span>Ajustes</span>
         </div>
     </nav>
@@ -167,9 +242,14 @@
 
         function save() { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
 
+        // Navegación universal: funciona desde cualquier pantalla
         function switchTab(tab) {
+            // Cerrar vista de detalles si está abierta
+            document.getElementById('v-clientes').style.display = 'none';
+            
             document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            
             if(tab === 'dias') {
                 document.getElementById('v-dias').classList.add('view-active');
                 document.getElementById('tab-dias').classList.add('active');
@@ -186,7 +266,7 @@
 
         function volver() {
             document.getElementById('v-clientes').style.display = 'none';
-            renderD();
+            switchTab('dias');
         }
 
         function irDia(idx) {
@@ -213,6 +293,7 @@
         }
 
         function actBorrar(id) {
+            if(!confirm("¿Eliminar cliente?")) return;
             db.days[curD].clients = db.days[curD].clients.filter(x => x.id !== id);
             save(); renderC();
         }
@@ -227,7 +308,7 @@
             if(c) { c.text = val; save(); }
         }
 
-        // FUNCIONES DE CARGA Y SERVICIO
+        // Gestión en curso
         function marcarCargado(clientId) {
             db.days.forEach(day => {
                 const c = day.clients.find(x => x.id === clientId);
@@ -237,13 +318,14 @@
         }
 
         function marcarServido(clientId) {
+            if(!confirm("¿Confirmar cliente SERVIDO? Se borrará de la base de datos.")) return;
             db.days.forEach(day => {
                 day.clients = day.clients.filter(x => x.id !== clientId);
             });
             save(); renderCurso();
         }
 
-        // CÁMARA
+        // Cámara
         async function abrirCamara(id) {
             activeIdForCam = id;
             document.getElementById('v-camara').style.display = 'flex';
@@ -269,18 +351,18 @@
                 const c = db.days[curD].clients.find(x => x.id === activeIdForCam);
                 if (c) { c.text += (c.text ? '\n' : '') + result.data.text.trim(); save(); }
                 cerrarCamara(); renderC();
-            } catch (e) { alert("Error OCR"); cerrarCamara(); }
+            } catch (e) { alert("OCR Error"); cerrarCamara(); }
         }
 
-        // RENDERS
+        // Renders
         function renderD() {
             const cont = document.getElementById('lista-dias');
             cont.innerHTML = '';
             db.days.forEach((d, i) => {
                 const div = document.createElement('div');
-                div.className = "card flex justify-between items-center";
+                div.className = "card flex justify-between items-center active:scale-95 transition-all";
                 div.onclick = () => irDia(i);
-                div.innerHTML = `<div><div class="font-black text-xl uppercase">${d.name}</div><div class="text-[10px] text-blue-500 font-black uppercase">${d.zone || 'Sin zona'}</div></div><div class="bg-slate-900 text-white w-12 h-12 flex items-center justify-center rounded-2xl font-black">${d.clients.length}</div>`;
+                div.innerHTML = `<div><div class="font-black text-xl uppercase text-white">${d.name}</div><div class="text-[10px] text-blue-400 font-black uppercase tracking-widest">${d.zone || 'Pulse para asignar zona'}</div></div><div class="bg-blue-600 text-white w-10 h-10 flex items-center justify-center rounded-xl font-black">${d.clients.length}</div>`;
                 cont.appendChild(div);
             });
         }
@@ -292,15 +374,15 @@
                 const div = document.createElement('div');
                 div.className = "card " + (c.status === 'e' ? 'status-e-border' : (c.status === 'c' ? 'status-c-border' : 'status-p-border'));
                 div.innerHTML = `
-                    <div class="flex justify-between items-center mb-4"><h4 class="font-black text-xl uppercase">${c.name}</h4><button onclick="actBorrar('${c.id}')" class="text-red-400 text-[10px] font-black">BORRAR</button></div>
-                    <div class="flex gap-2 mb-4 bg-slate-50 p-1.5 rounded-2xl">
-                        <button onclick="actStatus('${c.id}', 'p')" class="flex-1 py-3 text-[10px] font-black rounded-xl ${c.status==='p'?'bg-pendiente':'text-slate-400'}">PENDIENTE</button>
-                        <button onclick="actStatus('${c.id}', 'e')" class="flex-1 py-3 text-[10px] font-black rounded-xl ${c.status==='e'?'bg-enviado':'text-slate-400'}">ENVIADO</button>
-                        <button onclick="actStatus('${c.id}', 'c')" class="flex-1 py-3 text-[10px] font-black rounded-xl ${c.status==='c'?'bg-listo':'text-slate-400'}">LISTO</button>
+                    <div class="flex justify-between items-center mb-4"><h4 class="font-black text-xl uppercase text-white">${c.name}</h4><button onclick="actBorrar('${c.id}')" class="text-red-500 text-[10px] font-black uppercase">Borrar</button></div>
+                    <div class="flex gap-2 mb-4 bg-slate-900/50 p-1.5 rounded-2xl border border-slate-700">
+                        <button onclick="actStatus('${c.id}', 'p')" class="flex-1 py-3 text-[10px] font-black rounded-xl ${c.status==='p'?'bg-pendiente shadow-lg shadow-amber-900/40':'text-slate-500'}">PENDIENTE</button>
+                        <button onclick="actStatus('${c.id}', 'e')" class="flex-1 py-3 text-[10px] font-black rounded-xl ${c.status==='e'?'bg-enviado shadow-lg shadow-blue-900/40':'text-slate-500'}">ENVIADO</button>
+                        <button onclick="actStatus('${c.id}', 'c')" class="flex-1 py-3 text-[10px] font-black rounded-xl ${c.status==='c'?'bg-listo shadow-lg shadow-emerald-900/40':'text-slate-500'}">LISTO</button>
                     </div>
-                    <button onclick="abrirCamara('${c.id}')" class="btn-grande bg-slate-900 text-white text-[11px]">Escanear</button>
-                    <textarea oninput="actTexto('${c.id}', this.value)" placeholder="Pedido...">${c.text}</textarea>
-                    <button onclick="enviarWA('${c.id}')" class="btn-grande bg-listo text-white text-[11px]">WhatsApp</button>
+                    <button onclick="abrirCamara('${c.id}')" class="btn-grande bg-slate-700 text-white text-[11px] border border-slate-600">Escanear Nota</button>
+                    <textarea oninput="actTexto('${c.id}', this.value)" placeholder="Escribe el pedido aquí...">${c.text}</textarea>
+                    <button onclick="enviarWA('${c.id}')" class="btn-grande bg-emerald-600 text-white text-[11px] shadow-lg shadow-emerald-900/20">Enviar WhatsApp</button>
                 `;
                 cont.appendChild(div);
             });
@@ -315,35 +397,12 @@
                     if (c.text.trim() !== "") {
                         hay = true;
                         const div = document.createElement('div');
-                        div.className = "card";
+                        div.className = "card border-l-4 border-blue-500";
                         div.innerHTML = `
-                            <h4 class="font-black text-lg uppercase">${c.name}</h4>
-                            <p class="text-[9px] font-bold text-blue-500 mb-2">${day.name} • ${day.zone}</p>
-                            <div class="bg-slate-50 rounded-xl p-3 mb-4 text-xs italic">${c.text}</div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <button onclick="marcarCargado('${c.id}')" class="btn-grande ${c.loaded ? 'bg-listo' : 'bg-slate-200 text-slate-500'} text-[11px]">${c.loaded ? '✓ CARGADO' : 'CARGAR'}</button>
-                                <button onclick="marcarServido('${c.id}')" class="btn-grande bg-rojo-fuerte text-[11px] text-white">SERVIDO</button>
+                            <div class="flex justify-between items-start mb-2">
+                                <div><h4 class="font-black text-lg uppercase text-white">${c.name}</h4><p class="text-[9px] font-bold text-blue-400 uppercase tracking-tighter">${day.name} • ${day.zone || 'Sin zona'}</p></div>
+                                <div class="text-[8px] bg-slate-900 px-2 py-1 rounded text-slate-400 font-bold">${c.status==='p'?'PEND':(c.status==='e'?'ENV':'LISTO')}</div>
                             </div>
-                        `;
-                        cont.appendChild(div);
-                    }
-                });
-            });
-            if(!hay) cont.innerHTML = '<p class="text-center text-slate-400 font-black uppercase text-xs py-20">No hay pedidos</p>';
-        }
-
-        function enviarWA(id) {
-            const c = db.days[curD].clients.find(x => x.id === id);
-            if(!c.text) return;
-            actStatus(id, 'e');
-            window.open(`https://wa.me/?text=${encodeURIComponent("*CLIENTE:* " + c.name + "\n\n" + c.text)}`);
-        }
-
-        function reseteoForzado() { if(confirm("¿Borrar todo?")) { localStorage.removeItem(DB_KEY); location.reload(); } }
-        function exportarDatos() { const b = new Blob([JSON.stringify(db)], {type:"application/json"}); const a = document.createElement("a"); a.href=URL.createObjectURL(b); a.download="ruta.json"; a.click(); }
-        function importarDatos(e) { const r = new FileReader(); r.onload=(ev)=>{db=JSON.parse(ev.target.result); save(); location.reload();}; r.readAsText(e.target.files[0]); }
-    </script>
-</body>
-</html>
-
-```
+                            <div class="bg-slate-900/80 rounded-xl p-3 mb-4 text-xs italic text-slate-300 border border-slate-800">${c.text}</div>
+                            <div class="grid grid-cols-2 gap-3">
+           
